@@ -78,13 +78,22 @@ def registerdate():
     f.close()
     return 'success'
     
-
-
-
-
-
-
-
+@app.route('/showuser',methods=['GET','POST'])
+def showuser():
+    f=open('db.txt')
+    userinfo_dict = {}
+    userinfo_list = f.readlines()
+    f.close()  
+    for userinfo in userinfo_list:
+        if userinfo.strip == '':
+            break
+        userinfo=userinfo.split(':')
+        _userinfo_name=userinfo[0]
+        _userinfo_password=userinfo[1]
+        _userinfo_phonenum=userinfo[2].rstrip('\n')
+        userinfo_dict[_userinfo_name]={'password':_userinfo_password,\
+                                       'phonenum':_userinfo_phonenum}
+    return render_template('showuser.ftl',users=userinfo_dict)
 
 
 
