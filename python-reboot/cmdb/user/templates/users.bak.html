@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>用户信息列表</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css"/>
+    <style type="text/css">
+        .mycontainer{margin-top:20px;}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">CMDB</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="javascript:void(0);">欢迎{{session['user']}}</a></li>
+            <li><a href="/logout/">注销登录</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+        基础资源
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/users/">用户管理</a></li>
+            <li><a href="/assets/">资产管理</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+        业务资源
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul>
+        </div>
+        <div class="col-md-10 col-md-offset-2 main">
+            <div class="container">
+                <!--<form class="form-inline" action="/users/">
+                  <div class="form-group">
+                      <input type="text" class="form-control" name="query" placeholder="用户名" value="{{query}}"/>
+                      <button type="submit"  class="btn btn-primary">查询</button>
+                       <a href="/createUser/">添加</a>
+                  </div>
+                </form>-->
+                <form class="form-inline" action="/users/" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="query" value="{{query}}"/>
+                        <input type="submit" class="btn btn-default" value="查询"/>
+                        <!--<a href="/createUser/">添加</a>-->
+                        <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addUser">
+                                添加
+                                </button>
+                    </div>
+                </form>
+                </br>
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>手机号</th>
+                            <th>年龄</th>
+                            <th>性别</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{user['username']}}</td>
+                            <td>{{user['telephone']}}</td>
+                            <td>{{user['age']}}</td>
+                            <td>
+                                {% if user['sex'] == 1 %}
+                                    男
+                                {% else %}
+                                    女
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user['status'] == 0 %}
+                                    <p style="color:green">正常</p>
+                                {% elif user['status'] == 1 %}
+                                    <p style="color:blue">禁用</p>
+                                {% elif user['status'] == 2 %}
+                                    <p style="color:red">停用</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!--
+                                <a href="/modifyUser/?id={{user['id']}}">修改</a>
+                                <a href="/deleteUser/?id={{user['id']}}">删除</a>
+                                -->
+                                <button type="button" class="btn btn-link" data-toggle="modal"  data-username="{{user['username']}}" data-telephone="{{user['telephone']}}" 
+                                data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#updateUser">
+                                修改
+                                </button>
+                                <button type="button" class="btn btn-link" data-toggle="modal"  data-username="{{user['username']}}" data-telephone="{{user['telephone']}}" 
+                                data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#deleteUser">
+                                删除
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal updateuser-->
+    <div class="modal fade" id="updateUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">修改用户信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" >
+              <div class="alert alert-danger" role="alert" id="errormsg-update"></div>
+              <input type="hidden" name="id" id='id' />
+              <div class="form-group">
+                <label for="inputtelephone" class="col-sm-2 control-label">手机号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="telephone" id="inputtelephone">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputage" class="col-sm-2 control-label">年龄</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control"  name="age" id="inputage">
+                </div>
+              </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="btn-update">保存</button>
+            </div>
+          </div>  
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal deleteUser/-->
+    <div class="modal fade" id="deleteUser" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">删除用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="alert alert-danger" role="alert" id="errormsg-del"></div>
+              <input type="hidden" name="id" id='id-del' />
+              <input type="hidden" name="username" id='username-del' />
+              <div class="form-group">
+                <label for="inputtelephone" class="col-sm-2 control-label">手机号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="telephone" id="telephone-del" disabled="disabled">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputage" class="col-sm-2 control-label">年龄</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control"  name="age" id="age-del" disabled="disabled">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="btn-delete">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal addUser-->
+    <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="addUserLabel">新增用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" >
+              <div class="alert alert-danger" role="alert" id="errormsg-add"></div>
+              <div class="form-group">
+                <label for="username-add" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="username" id="username-add">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password-add" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" name="password" id="password-add">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="telephone-add" class="col-sm-2 control-label">手机号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="telephone" id="telephone-add">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="age-add" class="col-sm-2 control-label">年龄</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control"  name="age" id="age-add">
+                </div>
+              </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="btn-add">新增</button>
+            </div>
+          </div>  
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="/static/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            // 更新用户信息弹框
+            $('#updateUser').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget);
+              var username = button.data('username');
+              var modal = $(this);
+              jQuery("#errormsg-update").hide();
+              modal.find('.modal-title').text('修改用户（' + username +'）的信息');
+              modal.find('#id').val(button.data('id'));
+              modal.find('#inputtelephone').val(button.data('telephone'));
+              modal.find('#inputage').val(button.data('age'));
+            });   
+            
+            // 发送更新请求
+            $('#btn-update').on('click',function(){
+              var id = $('#id').val(),
+                  telephone = $('#inputtelephone').val(),
+                  age = $('#inputage').val();
+              jQuery.post('/updateUser/',{
+                'id':id,
+                'telephone':telephone,
+                'age':age
+              },function(data){
+                //console.log(data);
+                if(data['ok']){
+                    jQuery('#updateUser').hide();
+                    window.location.reload();
+                    alert("更新成功");
+                }else{
+                    jQuery("#errormsg-update").text(data['result']);
+                    jQuery("#errormsg-update").show();
+                }
+              } , "json");
+            });
+            
+            // 删除用户信息弹框
+            $('#deleteUser').on('show.bs.modal', function (event) {
+              var button = $(event.relatedTarget);
+              var username = button.data('username');
+              var modal = $(this);
+              jQuery("#errormsg-del").hide();
+              modal.find('.modal-title').text('真的要删除用户（' + username +'）吗？');
+              modal.find('#id-del').val(button.data('id'));
+              modal.find('#telephone-del').val(button.data('telephone'));
+              modal.find('#username-del').val(button.data('username'));
+              modal.find('#age-del').val(button.data('age'));
+            });
+            
+            // 发送删除请求
+            $('#btn-delete').on('click',function(){
+              var id = $('#id-del').val(),
+                  username = $('#username-del').val();  
+              jQuery.get('/deleteUser/',{
+                'id':id,
+              }, function(data){
+                if(data['ok']){
+                    jQuery('#deleteUser').hide();
+                    window.location.reload();
+                    alert("您已删除用户："+ username);
+                }else{
+                    jQuery("#errormsg-del").text(data['result']);
+                    jQuery("#errormsg-del").show();
+                };
+              },"json");
+            });
+
+            // 新增用户信息弹框
+            $('#addUser').on('show.bs.modal', function (event) {
+              jQuery("#errormsg-add").hide();
+            }); 
+            // 发送添加请求
+            $('#btn-add').on('click',function(){
+              var username = $('#username-add').val(),
+                  password = $('#password-add').val(),
+                  telephone = $('#telephone-add').val(),
+                  age = $('#age-add').val();
+              jQuery.post('/addUser/',{
+                'username':username,
+                'password':password,
+                'telephone':telephone,
+                'age':age
+              },function(data){
+                //console.log(data);
+                if(data['ok']){
+                    jQuery('#addUser').hide();
+                    window.location.reload();
+                    alert(data['result']);
+                }else{
+                    jQuery("#errormsg-add").text(data['result']);
+                    jQuery("#errormsg-add").show();
+                }
+              } , "json");
+            });
+        });
+    </script>
+</body>
+</html>

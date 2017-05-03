@@ -109,7 +109,7 @@ def modify_user(uid, telephone, age, sex=1, status=0):
 # 根据用户主键删除用户信息
 def delete_user(uid):
     _cnt, _ = execute_sql(SQL_DELETE_BY_ID, (uid,))
-    return _cnt > 0
+    return _cnt > 0,''
 
 
 
