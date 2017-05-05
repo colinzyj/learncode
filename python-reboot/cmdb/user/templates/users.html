@@ -4,16 +4,22 @@
 {% block container %}
 <div class="col-md-10 col-md-offset-2 main">
     <div>
-        <form class="form-inline" action="/users/" method="post">
-            <div class="form-group">
-                <input type="text" class="form-control" name="query" value="{{query}}"/>
-                <input type="submit" class="btn btn-default" value="查询"/>
-                <!--<a href="/createUser/">添加</a>-->
-                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addUser">
-                添加
+        <div class="row">
+            <div class="col-md-1">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUser">
+                    添加用户
                 </button>
             </div>
-        </form>
+            <div class="col-md-4">
+                <form class="form-inline" action="/users/" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="query" value="{{query}}"/>
+                        <input type="submit" class="btn btn-default" value="查询"/>
+                        <!--<a href="/createUser/">添加</a>-->
+                    </div>
+                </form>
+            </div>
+        </div>
         </br>
         <table class="table table-striped table-hover table-bordered">
             <thead>
@@ -206,14 +212,14 @@ jQuery(document).ready(function(){
         'id':id,
         'telephone':telephone,
         'age':age
-      },function(data){
-        //console.log(data);
-        if(data['ok']){
+      },function(res){
+        //console.log(res);
+        if(res['ok']){
             jQuery('#updateUser').hide();
             window.location.reload();
             alert("更新成功");
         }else{
-            jQuery("#errormsg-update").text(data['result']);
+            jQuery("#errormsg-update").text(res['result']);
             jQuery("#errormsg-update").show();
         }
       } , "json");
@@ -238,13 +244,13 @@ jQuery(document).ready(function(){
           username = $('#username-del').val();  
       jQuery.get('/deleteUser/',{
         'id':id,
-      }, function(data){
-        if(data['ok']){
+      }, function(res){
+        if(res['ok']){
             jQuery('#deleteUser').hide();
             window.location.reload();
             alert("您已删除用户："+ username);
         }else{
-            jQuery("#errormsg-del").text(data['result']);
+            jQuery("#errormsg-del").text(res['result']);
             jQuery("#errormsg-del").show();
         };
       },"json");
@@ -265,14 +271,14 @@ jQuery(document).ready(function(){
         'password':password,
         'telephone':telephone,
         'age':age
-      },function(data){
-        //console.log(data);
-        if(data['ok']){
+      },function(res){
+        //console.log(res);
+        if(res['ok']){
             jQuery('#addUser').hide();
             window.location.reload();
-            alert(data['result']);
+            alert(res['result']);
         }else{
-            jQuery("#errormsg-add").text(data['result']);
+            jQuery("#errormsg-add").text(res['result']);
             jQuery("#errormsg-add").show();
         }
       } , "json");

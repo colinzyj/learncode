@@ -112,6 +112,14 @@ def delete_user(uid):
     return _cnt > 0,''
 
 
+def validate_asset_add(*args,**kwargs):
+    return True,'检验成功'
+
+def add_asset(sn,ip,hostname,machine_room_id,cpu,purchase_date):
+    _sql = 'insert into asset(sn,ip,hostname,machine_room_id,cpu,purchase_date) values (%s,%s,%s,%s,%s,%s)'
+    _cnt, _ = execute_sql(_sql,(sn,ip,hostname,machine_room_id,cpu,purchase_date))
+    return _cnt > 0
+
 
 # 测试的代码
 if __name__ == '__main__':

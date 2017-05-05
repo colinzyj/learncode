@@ -1,26 +1,31 @@
 {% extends 'layout.html' %}
 {% block title %}资产管理{% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-slider.min.css"/>
+{% endblock %}
+{% block style %}
+{% endblock %}
 {% block activeasset %}class="active"{% endblock %}
 {% block container %}
 <div class="col-md-10 col-md-offset-2 main">
     <div>
-        <!--<form class="form-inline" action="/users/">
-          <div class="form-group">
-              <input type="text" class="form-control" name="query" placeholder="用户名" value="{{query}}"/>
-              <button type="submit"  class="btn btn-primary">查询</button>
-               <a href="/createUser/">添加</a>
-          </div>
-        </form>-->
-        <form class="form-inline" action="/users/" method="post">
-            <div class="form-group">
-                <input type="text" class="form-control" name="query" value="{{query}}"/>
-                <input type="submit" class="btn btn-default" value="查询"/>
-                <!--<a href="/createUser/">添加</a>-->
-                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addUser">
-                        添加
-                        </button>
+        <div class="row">
+            <div class="col-md-1">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAsset">
+                    添加
+                </button>
             </div>
-        </form>
+            <div class="col-md-4">
+                <form class="form-inline" action="/assets/" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="query" value="{{query}}"/>
+                        <input type="submit" class="btn btn-default" value="查询"/>
+                        <!--<a href="/createUser/">添加</a>-->
+                    </div>
+                </form>
+            </div>
+        </div>
         </br>
         <table class="table table-striped table-hover table-bordered">
             <thead>
@@ -42,4 +47,183 @@
         </table>
     </div>
 </div>
+
+<!-- addAsset -->
+<div class="modal fade" id="addAsset" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">新建</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+          <div class="alert alert-danger" role="alert" id="errormsg-add"></div>
+          <div class="form-group">
+            <label for="sn-add" class="col-sm-2 control-label">SN</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="sn-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ip-add" class="col-sm-2 control-label">IP地址</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="ip-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="hostname-add" class="col-sm-2 control-label">主机名</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="hostname-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="machine_room-add" class="col-sm-2 control-label">机房</label>
+            <div class="col-sm-10">
+              <select id="machine_room-add" class="form-control">
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bussiness-add" class="col-sm-2 control-label">业务</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="bussiness-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="admin-add" class="col-sm-2 control-label">使用者</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="admin-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cpu-add" class="col-sm-2 control-label">CPU</label>
+            <div class="col-sm-10">
+              <div class="col-sm-7">
+              <input id="cpu-add" type="text" data-slider-min="0" data-slider-max="64" data-slider-step="2" data-slider-value="24"/>
+              </div>
+              <div class="col-sm-3">
+              <span id="cpu-addSliderVal">
+                CPU核数:24
+              </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ram-add" class="col-sm-2 control-label">内存</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="ram-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="disk-add" class="col-sm-2 control-label">硬盘</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="disk-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="os-add" class="col-sm-2 control-label">操作系统</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="os-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="model-add" class="col-sm-2 control-label">型号</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="model-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="purchase_date-add" class="col-sm-2 control-label datetimepicker">采购时间</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="purchase_date-add" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="vendor-add" class="col-sm-2 control-label">厂商</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="vendor-add" >
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="btn-addAsset">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-slider.min.js"></script>
+{% endblock %}
+{% block javascript %}
+jQuery(document).ready(function(){
+    // 更新机房dialog
+    jQuery('#addAsset').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var modal = $(this);
+      jQuery("#errormsg-add").hide();
+      jQuery("#machine_room-add").empty();
+      jQuery.get('/machine_rooms/',function(res){
+        //console.log(res);{id:name}
+        for ( var key in res) {
+            jQuery("#machine_room-add").append("<option value='"+key+"'>"+res[key]+"</option>");
+        }
+      } , "json");
+    });
+    
+    // 时间选择器
+    $('#purchase_date-add').datetimepicker({
+        language:'zh-CN',
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        endDate:new Date(),
+        minView:2,
+        pickerPosition:'top-right'
+    });
+    
+    // cpu选择条
+    $("#cpu-add").slider({
+        tooltip: 'always'
+    });
+    $("#cpu-add").on("slide", function(slideEvt) {
+        $("#cpu-addSliderVal").text('CPU核数:'+slideEvt.value);
+    });
+    
+    // 提交数据
+    $("#btn-addAsset").bind('click',function(){
+        var sn = $("#sn-add").val(),
+            ip = $("#ip-add").val(),
+            hostname = $("#hostname-add").val(),
+            machine_room = $("#machine_room-add").val(),
+            cpu = $("#cpu-add").val(),
+            purchase_date = $("#purchase_date-add").val();
+        jQuery.post(
+          '/addAsset/',
+          {
+            'sn':sn,
+            'ip':ip,
+            'hostname':hostname,
+            'machine_room':machine_room,
+            'cpu':cpu,
+            'purchase_date':purchase_date
+          },
+          function(res){
+            if(res['ok']){
+                jQuery('#addUser').hide();
+                window.location.reload();
+                alert(res['result']);
+            }else{
+                jQuery("#errormsg-add").text(res['result']);
+                jQuery("#errormsg-add").show();
+            }
+          } ,
+          "json"
+        );
+    });
+});
 {% endblock %}

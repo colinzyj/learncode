@@ -221,7 +221,36 @@ def assets():
 
 
 
+# 机房列表
+@app.route('/machine_rooms/', methods=['GET', 'POST'])
+@login_required
+def machine_rooms():
+    return json.dumps({1:'上海',2:'北京'})
 
+
+# 新增资产
+@app.route('/addAsset/', methods=['POST'])
+@login_required
+def addAsset():
+    print request.form
+    sn = request.form.get('sn','')
+    ip = request.form.get('ip','')
+    hostname = request.form.get('hostname','')
+    machine_room_id = request.form.get('machine_room','')
+    cpu = request.form.get('cpu','')
+    purchase_date = request.form.get('purchase_date','')
+
+    ok, result = models.validate_asset_add(sn,ip,hostname,machine_room_id,cpu,purchase_date)
+    
+    if ok:
+        if models.add_asset(sn,ip,hostname,machine_room_id,cpu,purchase_date):
+            ok = True
+            result = '添加成功'
+        else:
+            ok = False
+            result = '添加失败'
+    
+    return json.dumps({'ok':ok,'result':result})
 
 
 
