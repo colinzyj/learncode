@@ -2,6 +2,93 @@
 
 from dbutil import execute_sql
 
+class User(object):
+    colums = ['id', 'username', 'password', 'telephone', 'age', 'sex', 'status']
+    sql_login = 'SELECT * FROM user WHERE username=%s AND password=md5(%s) LIMIT 1;'
+    sql_fetch_all = 'SELECT %s FROM user'
+    sql_get_by_username = 'SELECT %s FROM user WHERE username=%%s LIMIT 1;'
+    sql_insert = 'INSERT INTO user(username, password, telephone, age, sex, status) VALUES(%s, md5(%s), %s, %s, %s, %s);'
+    sql_get_by_key = 'SELECT %s FROM user WHERE id=%%s LIMIT 1;'
+    sql_update = 'UPDATE user SET telephone=%s, age=%s WHERE id=%s;'
+    sql_delete_by_key = 'DELETE FROM user WHERE id=%s;'
+
+    
+    def __init__(self,user):
+        self.id = user.get('id','')
+        self.username = user.get('username','')
+        self.password = user.get('password','')
+        self.telephone = user.get('telephone','')
+        self.sex = user.get('sex',1)
+        self.age = user.get('age',0)
+        self.status = user.get('status',0)
+
+    def login(self):
+        _cnt, _ = execute_sql(self.sql_login, (self.username, self.password), True)
+        return _cnt > 0
+
+    @classmethod
+    def fetch_all(cls, query=''):
+        _sql = cls.sql_fetch_all %','.join(cls.colums)
+        _args=[]
+        if query.strip() != '':
+            _sql += ' WHERE username like %s'
+            _args.append('%' + query + '%')
+        #print _sql
+        _cnt, _users = execute_sql(_sql, _args, True)
+        return [User(dict(zip(cls.colums, _user))) for _user in _users]
+
+    def validate_add(self):
+        if self.username == '' or self.password == '':
+            return False, '用户名或密码不能为空'
+        
+        _user = self.get_by_username(self.username)
+        
+        if _user is not None:
+            return False, '用户已注册'
+        
+        if not str(self.age).isdigit() or int(self.age) < 0 or int(self.age) > 100:
+            return False, '用户年龄不正确'
+        
+        return True, ''
+
+    @classmethod
+    def get_by_username(cls,username):
+        _sql = cls.sql_get_by_username % ','.join(cls.colums)
+        _cnt, _users = execute_sql(_sql, (username, ), True)
+        return dict(zip(cls.colums, _users[0])) if _cnt > 0 else None
+
+    def create(self):
+        _user = self.get_by_username(self.username)
+        if _user is None:
+            _cnt, _ = execute_sql(self.sql_insert,(self.username, self.password, self.telephone, self.age, self.sex, self.status))
+            return _cnt > 0
+        return False
+
+    @classmethod
+    def get_user_by_key(cls,key):
+        _sql = cls.sql_get_by_key % ','.join(cls.colums)
+        print _sql
+        _cnt, _users = execute_sql(_sql, (key, ), True)
+        return User(dict(zip(cls.colums, _users[0]))) if _cnt > 0 else None
+
+    def validate_modify(self):
+        if not str(self.telephone).isdigit() or len(self.telephone) != 11 or not str(self.telephone).startswith('1'):
+            return False, '手机号码不正确'
+        if not str(self.age).isdigit() or int(self.age) < 0 or int(self.age) > 100:
+            return False, '用户年龄不正确'
+            
+        return True, ''
+
+    def update(self):
+        _cnt, _ = execute_sql(self.sql_update, (self.telephone, self.age, self.id))
+        return _cnt > 0
+
+    @classmethod
+    def delete(cls,key):
+        _cnt, _ = execute_sql(cls.sql_delete_by_key, (key,))
+        return _cnt > 0,''
+
+
 '''
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (

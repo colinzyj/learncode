@@ -35,22 +35,22 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{user['username']}}</td>
-                    <td>{{user['telephone']}}</td>
-                    <td>{{user['age']}}</td>
+                    <td>{{user.username}}</td>
+                    <td>{{user.telephone}}</td>
+                    <td>{{user.age}}</td>
                     <td>
-                        {% if user['sex'] == 1 %}
+                        {% if user.sex == 1 %}
                             男
                         {% else %}
                             女
                         {% endif %}
                     </td>
                     <td>
-                        {% if user['status'] == 0 %}
+                        {% if user.status == 0 %}
                             <p style="color:green">正常</p>
-                        {% elif user['status'] == 1 %}
+                        {% elif user.status == 1 %}
                             <p style="color:blue">禁用</p>
-                        {% elif user['status'] == 2 %}
+                        {% elif user.status == 2 %}
                             <p style="color:red">停用</p>
                         {% endif %}
                     </td>

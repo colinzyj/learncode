@@ -45,20 +45,26 @@ def index():
 def login():
     # 如果为GET请求则从request.args中获取提交的数据
     # 如果为POST请求则从request.form中获取提交的数据
+    #print request.headers['Host']
     params = request.args if request.method == 'GET' else request.form
     
+    '''
     # 获取username和password信息
     username = params.get('username', '')
     password = params.get('password', '')
+    '''
+    
+    user = models.User(params)
     
     # 验证用户名和密码
-    if models.validate_user_login(username, password):
-        session['user']=username
+    #if models.validate_user_login(username, password):
+    if user.login():
+        session['user']=user.username
         # 成功则显示所有用户的信息列表
         return redirect('/users/')
     else:
         # 失败则提示用户失败, 依然返回登陆页面
-        return render_template('login.html', error='用户名或密码错误', login_username=username)
+        return render_template('login.html', error='用户名或密码错误', login_username=user.username)
 
 '''
 # 注册功能不提供
@@ -95,7 +101,9 @@ def users():
     params = request.args if request.method == 'GET' else request.form
     _query = params.get('query', '')
     # 获取所有用户
-    _users = models.get_users(_query)
+    #_users = models.get_users(_query)
+    _users = models.User.fetch_all(_query)
+    #print _users
     #print "iam users"
     # 返回用户列表页面
     #print session.get('user')
@@ -115,18 +123,25 @@ def createUser():
 @app.route('/addUser/', methods=['POST'])
 @login_required
 def addUser():
+    '''
     # 从request.form中获取username、password、telephone信息
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     telephone = request.form.get('telephone', '')
     age = request.form.get('age', '')
+    '''
+    params = request.args if request.method == 'GET' else request.form
+    user = models.User(params)
 
     # 检查用户提交的数据
-    ok, result = models.validate_user_add(username, password, telephone, age)
+    #ok, result = models.validate_user_add(username, password, telephone, age)
+    ok, result = user.validate_add()
+    
     
     # 如果检查通过则添加到文件中
     if ok:
-        if models.add_user(username, password, telephone, age):
+        #if models.add_user(username, password, telephone, age):
+        if user.create():
             ok = True
             result = '添加成功'
         else:
@@ -156,23 +171,23 @@ def modifyUser():
 '''
 
 # 更新用户信息(更新DB)
-@app.route('/updateUser/', methods=['POST','GET'])
+@app.route('/updateUser/', methods=['POST'])
 @login_required
 def updateUser():
     _id = request.form.get('id', '')
-    _user = models.get_user_by_id(_id)
-    if _user is None:
+    _ouser = models.User.get_user_by_key(_id)
+    if _ouser is None:
         #return render_template('update.html', result='用户信息不存在')
         ok,result = False,'用户信息不存在'
     else:
-        telephone = request.form.get('telephone', '')
-        age = request.form.get('age', '')
-
+        #telephone = request.form.get('telephone', '')
+        #age = request.form.get('age', '')
+        _nuser = models.User(request.form)
         # 检查用户提交的数据
-        ok, result = models.validate_user_modify(telephone, age)
+        ok, result = _nuser.validate_modify()
         # 如果检查通过则添加到DB
         if ok:
-            if models.modify_user(_user['id'], telephone, age):
+            if _nuser.update():
                 ok = True
                 result = '更新成功'
             else:
@@ -195,7 +210,7 @@ def updateUser():
 @login_required
 def deleteUser():
     _id = request.args.get('id', '')
-    ok,result = models.delete_user(_id)
+    ok,result = models.User.delete(_id)
     if not ok:
         result = "用户删除失败"
     #return redirect('/users/')
