@@ -43,6 +43,33 @@
                 </tr>
             </thead>
             <tbody>
+                {% for asset in assets %}
+                <tr>
+                    <td>{{asset['sn']}}</td>
+                    <td>{{asset['ip']}}</td>
+                    <td>{{asset['machine_room']}}</td>
+                    <td>{{asset['admin']}}</td>
+                    <td>
+                        <ul>
+                            <li>{{asset['cpu']}}</li>
+                            <li>{{asset['ram']}}</li>
+                            <li>{{asset['disk']}}</li>
+                        </ul>
+                    </td>
+                    <td>{{asset['os']}}</td>
+                    <td>{{asset['model']}}</td>
+                    <td>{{asset['purchase_date']}}</td>
+                    <td>{{asset['bussiness']}}</td>
+                    <td>
+                        <button type="button" class="btn btn-link" data-toggle="modal"  data-asset="{{asset}}" data-target="#updateAsset">
+                        修改
+                        </button>
+                        <button type="button" class="btn btn-link" data-toggle="modal"  data-asset="{{asset}}" data-target="#deleteAsset">
+                        删除
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -169,9 +196,12 @@ jQuery(document).ready(function(){
       jQuery("#errormsg-add").hide();
       jQuery("#machine_room-add").empty();
       jQuery.get('/machine_rooms/',function(res){
-        //console.log(res);{id:name}
+        //console.log(res)
         for ( var key in res) {
-            jQuery("#machine_room-add").append("<option value='"+key+"'>"+res[key]+"</option>");
+            //console.log(res[key]);
+            if (res[key][2] == 0 ){
+                jQuery("#machine_room-add").append("<option value='"+res[key][0]+"'>"+res[key][1]+"</option>");
+            }
         }
       } , "json");
     });

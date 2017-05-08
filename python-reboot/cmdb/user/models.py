@@ -17,12 +17,17 @@ CREATE TABLE `user` (
 
 # table中定义的用户属性
 COLUMS_USER = ['id', 'username', 'password', 'telephone', 'age', 'sex', 'status']
+COLUMS_ASSET = ['sn','vendor','machine_room','model','purchase_date','cpu',\
+                'ram','disk','os','ip','hostname','admin','bussiness','asset.status']
 
 # 查询所有用户sql语句
 SQL_FETCH_ALL = 'SELECT %s FROM user;' % ', '.join(COLUMS_USER)
+SQL_FETCH_ALLASSET = 'SELECT %s FROM asset left join machine_room on asset.machine_room_id = machine_room.machine_room_id;'\
+                     % ', '.join(COLUMS_ASSET)
 
 # 根据用户名查询用户信息sql语句
 SQL_FETCH_BY_USERNAME = 'SELECT %s FROM user WHERE username like %%s;' % ', '.join(COLUMS_USER)
+SQL_FETCHASSET_BY_SN = 'SELECT %s FROM asset left join machine_room on asset.machine_room_id = machine_room.machine_room_id WHERE sn like %%s;' % ', '.join(COLUMS_ASSET)
 
 # 根据用户主键获取用户信息sql语句
 SQL_GET_BY_ID = 'SELECT %s FROM user WHERE id=%%s LIMIT 1;' % ', '.join(COLUMS_USER)
@@ -110,6 +115,23 @@ def modify_user(uid, telephone, age, sex=1, status=0):
 def delete_user(uid):
     _cnt, _ = execute_sql(SQL_DELETE_BY_ID, (uid,))
     return _cnt > 0,''
+
+
+def get_machine_rooms():
+    _sql = 'select machine_room_id,machine_room,status from machine_room'
+    _cnt,_result = execute_sql(_sql,(),True)
+    #print _result
+    #print [zip(str(_value[0]), _value[1])) for _value in _result]
+    #print [dict(zip(str(_value[0]), _value[1])) for _value in _result]
+    #return [ dict(zip(str(_value[0]), _value[1])) for _value in _result]
+    return _result
+
+def get_assets(query=''):
+    if query == '':
+        _cnt, _assets = execute_sql(SQL_FETCH_ALLASSET, (), True)
+    else:
+        _cnt, _assets = execute_sql(SQL_FETCHASSET_BY_SN, ('%%%s%%' % query,), True)
+    return [dict(zip(COLUMS_ASSET, _asset)) for _asset in _assets]
 
 
 def validate_asset_add(*args,**kwargs):

@@ -99,7 +99,7 @@ def users():
     #print "iam users"
     # 返回用户列表页面
     #print session.get('user')
-    #print session
+    #print _users
     return render_template('users.html', users=_users, query=_query)
 
 '''
@@ -213,11 +213,13 @@ def logout():
 @login_required
 def assets():
     params = request.args if request.method == 'GET' else request.form
-    _query = ''
-    # 获取所有用户
-    _assets = ''
+    _query = params.get('query', '')
+    _assets = models.get_assets(_query)
     #print "iam users"
+    #print _assets
     return render_template('assets.html', assets=_assets, query=_query)
+
+
 
 
 
@@ -225,7 +227,14 @@ def assets():
 @app.route('/machine_rooms/', methods=['GET', 'POST'])
 @login_required
 def machine_rooms():
-    return json.dumps({1:'上海',2:'北京'})
+    _machine_rooms = models.get_machine_rooms()
+    #print "views"
+    #print _machine_rooms
+    #print json.dumps(_machine_rooms)
+    #print json.dumps({1:'上海',2:'北京'})
+    #print json.dumps(dict([ (_value[0],_value[1]) for _value in _machine_rooms]))
+    #return json.dumps(dict([(_value[0],_value[1]) for _value in _machine_rooms]))
+    return json.dumps(_machine_rooms)
 
 
 # 新增资产
