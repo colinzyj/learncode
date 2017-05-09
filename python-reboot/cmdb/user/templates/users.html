@@ -1,5 +1,8 @@
 {% extends 'layout.html' %}
 {% block title %}用户管理{% endblock %}
+{% block style %}
+.nav-btn-right{float:right;}
+{% endblock %}
 {% block activeuser %}class="active"{% endblock %}
 {% block container %}
 <div class="col-md-10 col-md-offset-2 main">
@@ -15,7 +18,6 @@
                     <div class="form-group">
                         <input type="text" class="form-control" name="query" value="{{query}}"/>
                         <input type="submit" class="btn btn-default" value="查询"/>
-                        <!--<a href="/createUser/">添加</a>-->
                     </div>
                 </form>
             </div>
@@ -38,40 +40,60 @@
                     <td>{{user.username}}</td>
                     <td>{{user.telephone}}</td>
                     <td>{{user.age}}</td>
-                    <td>
-                        {% if user.sex == 1 %}
-                            男
-                        {% else %}
-                            女
+                    <td>{% if user.sex == 1 %}男
+                        {% else %}女
                         {% endif %}
                     </td>
                     <td>
-                        {% if user.status == 0 %}
-                            <p style="color:green">正常</p>
-                        {% elif user.status == 1 %}
-                            <p style="color:blue">禁用</p>
-                        {% elif user.status == 2 %}
-                            <p style="color:red">停用</p>
+                        {% if user.status == 0 %}<p style="color:green">正常</p>
+                        {% elif user.status == 1 %}<p style="color:blue">禁用</p>
+                        {% elif user.status == 2 %}<p style="color:red">停用</p>
                         {% endif %}
                     </td>
                     <td>
-                        <!--
-                        <a href="/modifyUser/?id={{user['id']}}">修改</a>
-                        <a href="/deleteUser/?id={{user['id']}}">删除</a>
-                        -->
                         <button type="button" class="btn btn-link" data-toggle="modal"  data-username="{{user['username']}}" data-telephone="{{user['telephone']}}" 
-                        data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#updateUser">
-                        修改
-                        </button>
+                        data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#updateUser">修改</button>
                         <button type="button" class="btn btn-link" data-toggle="modal"  data-username="{{user['username']}}" data-telephone="{{user['telephone']}}" 
-                        data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#deleteUser">
-                        删除
-                        </button>
+                        data-age="{{user['age']}}" data-id="{{user['id']}}" data-target="#deleteUser">删除</button>
                     </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">暂无数据</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="row">
+          <div class="col-md-8">
+            第{{pageNum}}页，共{{maxPageNum}}页
+          </div>
+          <div class="col-md-4">
+            <nav class="nav-btn-right">
+              <ul class="pagination">
+                <li {% if pageNum == 1 %}class="disabled"{% endif %}>
+                  <a {% if pageNum == 1 %} href="javascript:void(0)"
+                     {% else %} href="/users/?query={{query}}&pageSize={{pageSize}}&pageNum={{pageNum -1}}"
+                     {% endif %} aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {% for page in range(startPageNum,endPageNum+1) %}
+                  <li {% if page==pageNum%}class = "active"{% endif %}>
+                    <a href="/users/?query={{query}}&pageSize={{pageSize}}&pageNum={{page}}">{{page}}</a>
+                  </li>
+                {% endfor %}
+                <li{% if maxPageNum==pageNum %}class="disabled"{% endif %}>
+                  <a {% if maxPageNum==pageNum %}href="javascript:void(0)"
+                     {% else %}href="/users/?query={{query}}&pageSize={{pageSize}}&pageNum={{pageNum +1}}"
+                     {% endif %}aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
     </div>
 </div>
 

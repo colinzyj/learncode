@@ -2,23 +2,38 @@
 <html>
 <head>
     <meta charset="utf-8">	
+    <style type="text/css">
+        .error{
+            color:red;
+        }
+        .success{
+            color:green;
+        }
+        
+    </style>
 </head>
 <body>
-    <input id="bt1" type=button value="隐藏"/>
-	<input class="bt2_class" type=button value="显示"/>
-    <input id="hbt1" type=button value="隐藏1"/>
-	<input id="hbt2" type=button value="隐藏2"/>
-	<input type=button value="测试"/>
-    <p id='ctx'>
-    ctx=abcedfghi
-    </p>
-    <p id='ctx1'>
-    ctx1=dfasdfsdfsadfsdf
-    </p>
-    <p id='ctx2'>
-    ctx2=hfjgjfghjghjgjgj
-    </p>
+    <div id="errusername"></div>
+    <input type="text"  name="myinput"/>
+    <div id="mdiv"></div>
+    <div class="myclass"></div>
+    <div class="myclass"></div>
 	<script type="text/javascript" src="jquery.1.7.1.min.js"></script>
-	<script type="text/javascript" src="change.0.1.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            var i=0;
+            setInterval(function(){
+                i++;
+                var x = jQuery('[name=myinput]').val();
+                if (x > 100 ){
+                    jQuery("#errusername").text("error value");
+                    jQuery("#errusername").removeClass("success").addClass("error");
+                }else{
+                    jQuery("#errusername").text("success value");
+                    jQuery("#errusername").removeClass("error").addClass("success");
+                }   
+            },1000)
+        });
+    </script>
 </body>
 </html>

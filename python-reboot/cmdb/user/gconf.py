@@ -8,3 +8,6 @@ DB_USER = 'cmdbuser'
 DB_PASSWD = '123456'
 DB_NAME = 'cmdbtest'
 DB_CHARSET = 'utf8'
+
+# 分页
+PAGESIZE = 10

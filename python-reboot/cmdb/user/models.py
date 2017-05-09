@@ -2,10 +2,24 @@
 
 from dbutil import execute_sql
 
+'''
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `username` VARCHAR(32) NOT NULL,
+    `password` VARCHAR(32) NOT NULL,
+    `telephone` VARCHAR(11) DEFAULT '',
+    `age` INT DEFAULT 0,
+    `sex` BOOLEAN DEFAULT 1,
+    `status` INT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+'''
+
 class User(object):
     colums = ['id', 'username', 'password', 'telephone', 'age', 'sex', 'status']
     sql_login = 'SELECT * FROM user WHERE username=%s AND password=md5(%s) LIMIT 1;'
     sql_fetch_all = 'SELECT %s FROM user'
+    sql_fetch_count = 'SELECT count(*) FROM user'
     sql_get_by_username = 'SELECT %s FROM user WHERE username=%%s LIMIT 1;'
     sql_insert = 'INSERT INTO user(username, password, telephone, age, sex, status) VALUES(%s, md5(%s), %s, %s, %s, %s);'
     sql_get_by_key = 'SELECT %s FROM user WHERE id=%%s LIMIT 1;'
@@ -27,12 +41,34 @@ class User(object):
         return _cnt > 0
 
     @classmethod
-    def fetch_all(cls, query=''):
+    def fetch_count(cls, query='' ):
+        _sql = cls.sql_fetch_count
+        _args=[]
+        if query.strip() != '':
+            _sql += ' WHERE username like %s'
+            _args.append('%' + query + '%')
+            
+        #print _sql
+        _cnt, _rst = execute_sql(_sql, _args, True)
+        return _rst[0][0] if _cnt > 0 else 0
+    
+
+    @classmethod
+    def fetch_all(cls, query='' , offset=None, limit=None):
         _sql = cls.sql_fetch_all %','.join(cls.colums)
         _args=[]
         if query.strip() != '':
             _sql += ' WHERE username like %s'
             _args.append('%' + query + '%')
+
+        if limit is not None:
+            _sql += ' LIMIT %s'
+            _args.append(limit)
+
+        if offset is not None:
+            _sql += ' OFFSET %s'
+            _args.append(offset)
+            
         #print _sql
         _cnt, _users = execute_sql(_sql, _args, True)
         return [User(dict(zip(cls.colums, _user))) for _user in _users]
@@ -89,18 +125,7 @@ class User(object):
         return _cnt > 0,''
 
 
-'''
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-    `id` INT PRIMARY KEY AUTO_INCREMENT,
-    `username` VARCHAR(32) NOT NULL,
-    `password` VARCHAR(32) NOT NULL,
-    `telephone` VARCHAR(11) DEFAULT '',
-    `age` INT DEFAULT 0,
-    `sex` BOOLEAN DEFAULT 1,
-    `status` INT DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-'''
+
 
 # table中定义的用户属性
 COLUMS_USER = ['id', 'username', 'password', 'telephone', 'age', 'sex', 'status']
